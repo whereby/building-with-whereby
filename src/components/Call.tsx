@@ -5,7 +5,7 @@ import type { TileData } from "./VideoTile";
 import WaitingRoomToast from "./WaitingRoomToast";
 import StatusScreen from "./StatusScreen";
 import { ControlButton } from "./controls";
-import { CameraIcon, CameraOffIcon, MicIcon, MicOffIcon, PhoneOffIcon } from "./icons";
+import { CameraIcon, CameraOffIcon, MicIcon, MicOffIcon, HangUpIcon } from "./icons";
 import { useOrientation } from "../hooks/useOrientation";
 import { shouldMirror } from "../lib/mirror";
 import { roomLabel } from "../lib/roomUrl";
@@ -179,9 +179,9 @@ export default function Call({ roomUrl, displayName, localMedia, onLeave, onExit
           onClick={leaveToLobby}
           aria-label="Leave call"
           title="Leave call"
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-red-600 text-white transition hover:bg-red-500"
+          className="ml-1 flex h-12 items-center justify-center rounded-full bg-red-600 px-7 text-white shadow-lg shadow-red-950/50 ring-1 ring-inset ring-white/10 transition hover:bg-red-500 active:scale-95"
         >
-          <PhoneOffIcon />
+          <HangUpIcon />
         </button>
       </footer>
     </div>

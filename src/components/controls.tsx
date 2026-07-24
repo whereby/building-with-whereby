@@ -20,10 +20,10 @@ export function ControlButton({ active, onClick, label, onIcon, offIcon }: Contr
       aria-label={label}
       title={label}
       className={
-        "flex h-12 w-12 items-center justify-center rounded-full transition " +
+        "flex h-12 w-12 items-center justify-center rounded-full transition active:scale-95 " +
         (active
           ? "bg-neutral-700 text-neutral-100 hover:bg-neutral-600"
-          : "bg-red-600 text-white hover:bg-red-500")
+          : "bg-red-500 text-white shadow-lg shadow-red-950/40 ring-1 ring-inset ring-white/15 hover:bg-red-400")
       }
     >
       {active ? onIcon : offIcon}
