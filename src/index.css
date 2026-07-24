@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+/* Dark UI by default. */
+html {
+  color-scheme: dark;
+  background-color: #0a0a0a;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
