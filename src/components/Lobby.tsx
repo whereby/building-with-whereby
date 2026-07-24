@@ -40,10 +40,26 @@ export default function Lobby({
   const [enablingMic, setEnablingMic] = useState(false);
   const missingAudio = useMissingAudio(localStream);
 
-  // The local stream reflects toggle state through its live tracks.
-  const cameraOn = (localStream?.getVideoTracks() ?? []).some((t) => t.enabled && t.readyState === "live");
-  const micOn = (localStream?.getAudioTracks() ?? []).some((t) => t.enabled && t.readyState === "live");
+  // useLocalMedia's state exposes no camera/mic "enabled" flag, and toggling
+  // only flips track.enabled (or stops/re-acquires the track) without changing
+  // the localStream reference — so there's nothing reactive to read the on/off
+  // state from. Track our own intent here (media starts with both on) and drive
+  // the SDK with an explicit boolean.
+  const [cameraOn, setCameraOn] = useState(true);
+  const [micOn, setMicOn] = useState(true);
   const mirror = shouldMirror(localStream);
+
+  const toggleCamera = () => {
+    const next = !cameraOn;
+    setCameraOn(next);
+    actions.toggleCameraEnabled(next);
+  };
+
+  const toggleMic = () => {
+    const next = !micOn;
+    setMicOn(next);
+    actions.toggleMicrophoneEnabled(next);
+  };
 
   const enableMicrophone = async () => {
     setEnablingMic(true);
@@ -93,14 +109,14 @@ export default function Lobby({
         <div className="absolute inset-x-0 bottom-0 flex justify-center gap-3 bg-gradient-to-t from-black/60 to-transparent p-4">
           <ControlButton
             active={micOn}
-            onClick={() => actions.toggleMicrophoneEnabled(!micOn)}
+            onClick={toggleMic}
             label={micOn ? "Mute microphone" : "Unmute microphone"}
             onIcon={<MicIcon />}
             offIcon={<MicOffIcon />}
           />
           <ControlButton
             active={cameraOn}
-            onClick={() => actions.toggleCameraEnabled(!cameraOn)}
+            onClick={toggleCamera}
             label={cameraOn ? "Turn off camera" : "Turn on camera"}
             onIcon={<CameraIcon />}
             offIcon={<CameraOffIcon />}
