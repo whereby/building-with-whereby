@@ -7,6 +7,7 @@ import { useMissingAudio } from "../hooks/useMissingAudio";
 import { playTestTone } from "../lib/testTone";
 
 interface Props {
+  isGuest: boolean;
   localMedia: UseLocalMediaResult;
   displayName: string;
   onDisplayNameChange: (name: string) => void;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function Lobby({
+  isGuest,
   localMedia,
   displayName,
   onDisplayNameChange,
@@ -193,7 +195,7 @@ export default function Lobby({
           onClick={onContinue}
           className="w-full rounded-lg bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
         >
-          Join call
+          {isGuest ? "Knock" : "Join call"}
         </button>
       </div>
     </div>

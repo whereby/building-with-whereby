@@ -6,6 +6,19 @@
 // app rebuilds the full room URL.
 const WHEREBY_SUBDOMAIN = import.meta.env.VITE_WHEREBY_SUBDOMAIN;
 
+/**
+ * Whether a room URL carries a roomKey — i.e. a host link, which joins
+ * immediately. A guest/participant link has no key and knocks into the (locked)
+ * room instead.
+ */
+export function hasRoomKey(roomUrl: string): boolean {
+  try {
+    return new URL(roomUrl).searchParams.has("roomKey");
+  } catch {
+    return false;
+  }
+}
+
 /** A short human label for a room URL — the room name from the path. */
 export function roomLabel(roomUrl: string): string {
   try {

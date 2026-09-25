@@ -3,6 +3,7 @@ import { useLocalMedia } from "@whereby.com/browser-sdk/react";
 import Lobby from "./Lobby";
 import Call from "./Call";
 import { getDisplayName, setDisplayName as persistDisplayName } from "../lib/storage";
+import { hasRoomKey } from "../lib/roomUrl";
 
 interface Props {
   roomUrl: string;
@@ -40,6 +41,7 @@ export default function MediaSession({ roomUrl, onLeave, onRemountMedia }: Props
 
   return (
     <Lobby
+      isGuest={!hasRoomKey(roomUrl)}
       localMedia={localMedia}
       displayName={displayName}
       onDisplayNameChange={handleDisplayNameChange}
