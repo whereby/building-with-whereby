@@ -52,11 +52,17 @@ npm run dev
   cameras), exposes camera/mic/speaker pickers and a speaker test tone, tracks
   toggle state as intent (the SDK exposes no enabled flag), and detects the iOS
   quirk where the mic silently fails — offering an *Enable microphone* button.
+  The primary button reads **Knock** for a guest (keyless link) and **Join
+  call** for the host (a link with a `roomKey`).
 - **Knock flow** — on `room_locked` it calls `knock()` and shows a waiting
   screen; `connected` drops into the call, `knock_rejected` shows its own
   screen. Hosts see an Admit/Deny toast for anyone waiting.
-- **Video grid** re-lays out live by orientation (see `columnsFor` in
-  [`src/components/VideoGrid.tsx`](src/components/VideoGrid.tsx)).
+- **In the call** — the header shows a generic “Whereby-powered room” label
+  (not the room UUID), a participant count, and an **Invite** button that copies
+  the participant invite link. The **video grid** re-lays out live by
+  orientation (see `columnsFor` in
+  [`src/components/VideoGrid.tsx`](src/components/VideoGrid.tsx)), with round
+  mute/camera toggles and a wider red hang-up pill in the footer.
 
 ## Deploy (Netlify)
 
@@ -73,12 +79,22 @@ key.
   `https://api.whereby.dev`. The frontend calls the same `/api/whereby/...` path
   in dev and prod, so nothing in the app changes.
 
-**One-time setup:**
+Deploys go through the Netlify CLI — no GitHub integration, so nothing is
+installed on your GitHub organization:
 
-1. Connect the GitHub repo in Netlify (build settings come from `netlify.toml`).
-2. In **Site settings → Environment variables**, add `WHEREBY_API_KEY` (secret,
-   stays on the server) and `VITE_WHEREBY_SUBDOMAIN` (public, e.g. `funtimes`,
-   baked into the build so invite links can rebuild room URLs).
+```bash
+npm install -g netlify-cli
+netlify login
+netlify deploy --build --prod   # first run: choose "Create & configure a new project"
+```
 
-The repo can still live on GitHub; Netlify just builds and hosts it. Every push
-to the connected branch triggers a deploy.
+Set the two env vars once, in **Site configuration → Environment variables** (or
+with `netlify env:set`):
+
+- `WHEREBY_API_KEY` — **secret**, stays on the server (used by the function).
+- `VITE_WHEREBY_SUBDOMAIN` — **public** (e.g. `funtimes`), baked into the build
+  so invite links can rebuild room URLs.
+
+Re-deploy any time with `netlify deploy --build --prod`. There's no auto-deploy
+on push — you publish when you're ready — and the repo can still live on GitHub
+as your source of truth.
