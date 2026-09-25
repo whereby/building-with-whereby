@@ -1,14 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRoomConnection, type UseLocalMediaResult } from "@whereby.com/browser-sdk/react";
 import VideoGrid from "./VideoGrid";
 import type { TileData } from "./VideoTile";
 import WaitingRoomToast from "./WaitingRoomToast";
 import StatusScreen from "./StatusScreen";
 import { ControlButton } from "./controls";
-import { CameraIcon, CameraOffIcon, MicIcon, MicOffIcon, HangUpIcon } from "./icons";
+import { CameraIcon, CameraOffIcon, MicIcon, MicOffIcon, HangUpIcon, LinkIcon, CheckIcon } from "./icons";
 import { useOrientation } from "../hooks/useOrientation";
 import { shouldMirror } from "../lib/mirror";
-import { roomLabel } from "../lib/roomUrl";
+import { appInviteLink } from "../lib/roomUrl";
 
 interface Props {
   roomUrl: string;
@@ -31,6 +31,19 @@ export default function Call({ roomUrl, displayName, localMedia, onLeave, onExit
     isMicrophoneEnabled,
   } = state;
   const orientation = useOrientation();
+  const [inviteCopied, setInviteCopied] = useState(false);
+
+  // The invite link is name-only, so it's the participant link regardless of
+  // whether the host or a participant joined this Call.
+  const copyInvite = async () => {
+    try {
+      await navigator.clipboard.writeText(appInviteLink(roomUrl));
+      setInviteCopied(true);
+      window.setTimeout(() => setInviteCopied(false), 1500);
+    } catch {
+      // Clipboard unavailable — ignore.
+    }
+  };
 
   // Initiate the connection once. useRoomConnection wires up leaveRoom on
   // unmount, so we don't tear down here.
@@ -148,11 +161,26 @@ export default function Call({ roomUrl, displayName, localMedia, onLeave, onExit
         onDeny={actions.rejectWaitingParticipant}
       />
 
-      <header className="flex items-center justify-between px-4 py-3">
-        <h1 className="truncate text-sm font-medium text-neutral-300">{roomLabel(roomUrl)}</h1>
-        <span className="text-xs text-neutral-500">
-          {tiles.length} {tiles.length === 1 ? "person" : "people"}
-        </span>
+      <header className="flex items-center justify-between gap-3 px-4 py-3">
+        <h1 className="truncate text-sm font-medium text-neutral-300">Whereby-powered room</h1>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-neutral-500">
+            {tiles.length} {tiles.length === 1 ? "person" : "people"}
+          </span>
+          <button
+            type="button"
+            onClick={copyInvite}
+            title="Copy a participant invite link"
+            className="flex items-center gap-1.5 rounded-lg border border-neutral-700 px-3 py-1.5 text-xs font-medium text-neutral-200 transition hover:bg-neutral-800"
+          >
+            {inviteCopied ? (
+              <CheckIcon width={15} height={15} className="text-green-400" />
+            ) : (
+              <LinkIcon width={15} height={15} />
+            )}
+            {inviteCopied ? "Copied" : "Invite"}
+          </button>
+        </div>
       </header>
 
       <main className="min-h-0 flex-1 px-2">

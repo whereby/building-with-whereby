@@ -40,7 +40,6 @@ export default function MediaSession({ roomUrl, onLeave, onRemountMedia }: Props
 
   return (
     <Lobby
-      roomUrl={roomUrl}
       localMedia={localMedia}
       displayName={displayName}
       onDisplayNameChange={handleDisplayNameChange}

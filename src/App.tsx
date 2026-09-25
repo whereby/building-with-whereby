@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { WherebyProvider } from "@whereby.com/browser-sdk/react";
 import MeetingsDashboard from "./components/MeetingsDashboard";
 import MediaSession from "./components/MediaSession";
@@ -29,6 +29,14 @@ export default function App() {
   }, []);
 
   const remountMedia = useCallback(() => setMediaKey((k) => k + 1), []);
+
+  // Route on fragment changes too, not just the initial load — so opening an
+  // invite link in an already-open tab (or via back/forward) still works.
+  useEffect(() => {
+    const onHashChange = () => setRoomUrl(readRoomFromFragment(window.location.hash));
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
 
   return (
     <div className="min-h-full bg-neutral-950 text-neutral-100">

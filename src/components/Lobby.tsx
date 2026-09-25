@@ -5,10 +5,8 @@ import { CameraIcon, CameraOffIcon, MicIcon, MicOffIcon, SpeakerIcon } from "./i
 import { shouldMirror } from "../lib/mirror";
 import { useMissingAudio } from "../hooks/useMissingAudio";
 import { playTestTone } from "../lib/testTone";
-import { roomLabel } from "../lib/roomUrl";
 
 interface Props {
-  roomUrl: string;
   localMedia: UseLocalMediaResult;
   displayName: string;
   onDisplayNameChange: (name: string) => void;
@@ -18,7 +16,6 @@ interface Props {
 }
 
 export default function Lobby({
-  roomUrl,
   localMedia,
   displayName,
   onDisplayNameChange,
@@ -78,7 +75,7 @@ export default function Lobby({
     <div className="mx-auto flex min-h-screen max-w-2xl flex-col gap-5 p-5">
       <header className="flex items-center justify-between">
         <div className="min-w-0">
-          <h1 className="truncate text-lg font-semibold">{roomLabel(roomUrl)}</h1>
+          <h1 className="truncate text-lg font-semibold">Whereby-powered room</h1>
           <p className="text-xs text-neutral-500">Ready to join</p>
         </div>
         <button
