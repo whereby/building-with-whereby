@@ -27,13 +27,14 @@ tag, since the links shown contain a `roomKey` that works like a password.
 Each meeting can be shared two ways, toggled per card: **Whereby pre-built**
 (the raw room links that open Whereby's own experience — host and participant,
 each with copy + open) or **Custom UI** (a clean, name-based invite link into
-this app: `/#<subdomain>/<roomName>`, with no escaped characters). The custom
-invite is participant-only — it deep-links straight into this app's pre-join
-lobby and knocks — because the host key can't ride in a clean link; the host
-joins from the dashboard ("Join as host"). Read the fragment on load and rebuild
-the room URL as `https://<subdomain>.whereby.com/<roomName>`. Joining needs no
-API key (only the room's own key), so invited visitors never need one — only the
-person generating meetings does.
+this app: `/#<roomName>`, with no escaped characters). The custom invite is
+participant-only — it deep-links straight into this app's pre-join lobby and
+knocks — because the host key can't ride in a clean link; the host joins from the
+dashboard ("Join as host"). Read the fragment on load and rebuild the room URL as
+`https://<subdomain>.whereby.com/<roomName>`, where the subdomain comes from a
+public `VITE_WHEREBY_SUBDOMAIN` build-time env var (it's in every room URL, so
+it's not secret). Joining needs no API key (only the room's own key), so invited
+visitors never need one — only the person generating meetings does.
 
 **API key / keeping it secret**: creating meetings needs a secret Whereby
 REST API key. It must never end up in the browser bundle or in git. Put it

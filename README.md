@@ -16,7 +16,7 @@ then:
 
 ```bash
 npm install
-cp .env.example .env      # then paste your key into WHEREBY_API_KEY
+cp .env.example .env      # set WHEREBY_API_KEY and VITE_WHEREBY_SUBDOMAIN
 npm run dev
 ```
 
@@ -36,10 +36,11 @@ npm run dev
   kept in `localStorage` (most recent first). Each meeting can be shared two
   ways, toggled per card:
   - **Custom UI** — a clean, name-based invite link into this app
-    (`/#<subdomain>/<roomName>`, no escaped characters) that deep-links a visitor
-    straight into the pre-join lobby as a participant (they knock). You enter via
-    *Join as host*. Joining needs no API key — only the room's own key — so
-    invited visitors never need one.
+    (`/#<roomName>`, no escaped characters) that deep-links a visitor straight
+    into the pre-join lobby as a participant (they knock). You enter via *Join as
+    host*. Joining needs no API key — only the room's own key — so invited
+    visitors never need one. Rebuilding the room URL from the name needs the
+    account subdomain, set via the public `VITE_WHEREBY_SUBDOMAIN` env var.
   - **Whereby pre-built** — the raw host and participant room links that open
     Whereby's own experience, with copy + open.
 
@@ -75,8 +76,9 @@ key.
 **One-time setup:**
 
 1. Connect the GitHub repo in Netlify (build settings come from `netlify.toml`).
-2. In **Site settings → Environment variables**, add `WHEREBY_API_KEY` with your
-   key. It stays on the server — never in the repo or the bundle.
+2. In **Site settings → Environment variables**, add `WHEREBY_API_KEY` (secret,
+   stays on the server) and `VITE_WHEREBY_SUBDOMAIN` (public, e.g. `funtimes`,
+   baked into the build so invite links can rebuild room URLs).
 
 The repo can still live on GitHub; Netlify just builds and hosts it. Every push
 to the connected branch triggers a deploy.
