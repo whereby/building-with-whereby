@@ -1,0 +1,14 @@
+# Netlify configuration. The Whereby API key is NOT set here — add it as a
+# server-side environment variable (WHEREBY_API_KEY) in the Netlify UI so it
+# never lands in git or the client bundle.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

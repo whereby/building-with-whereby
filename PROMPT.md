@@ -74,9 +74,12 @@ shape with a soft red glow and a proper end-call handset icon (a solid
 handset rotated to the classic hang-up position), so it reads clearly apart
 from the round mute/camera toggles.
 
-**Deployment**: add a GitHub Actions workflow that builds this and deploys
-it to GitHub Pages on every push to `main`. GitHub Pages serves project
-sites from a subpath, not the domain root, so set Vite's `base` config from
-an environment variable the workflow provides. Note that the deployed static
-site can show the UI but cannot generate meetings without the dev-server
-proxy or an equivalent serverless function.
+**Deployment**: deploy to Netlify (a static host can't create meetings — the
+Whereby REST API blocks browser calls with CORS, so a server-side hop is
+required). Ship a `netlify.toml` (build `npm run build`, publish `dist`) and a
+Functions-v2 serverless function at `/api/whereby/*` that mirrors the dev
+proxy: it reads `WHEREBY_API_KEY` from Netlify's server-side environment
+variables and forwards the request to `https://api.whereby.dev` with the auth
+header attached. The frontend keeps calling the same `/api/whereby/...` path in
+both dev and prod. The key is set in the Netlify UI, never in the repo or the
+bundle.

@@ -26,7 +26,8 @@ npm run dev
 > `VITE_` prefix, so it is never bundled into the browser). The Vite dev server
 > proxies `/api/whereby/*` to `https://api.whereby.dev` and attaches the
 > `Authorization` header itself — the browser only ever talks to the same-origin
-> proxy. `.env` is gitignored; never commit it.
+> proxy. `.env` is gitignored; never commit it. In production a Netlify function
+> does the same job (see below).
 
 ## How it works
 
@@ -48,19 +49,26 @@ npm run dev
 - **Video grid** re-lays out live by orientation (see `columnsFor` in
   [`src/components/VideoGrid.tsx`](src/components/VideoGrid.tsx)).
 
-## Deploy (GitHub Pages)
+## Deploy (Netlify)
 
-Pushing to `main` runs [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml),
-which builds and publishes to GitHub Pages. Because project sites are served
-from a subpath (`https://<user>.github.io/<repo>/`), the workflow passes that
-path to Vite via the `GITHUB_PAGES_BASE` env var, which
-[`vite.config.ts`](vite.config.ts) reads as `base`.
+A purely static host can't create meetings: the Whereby REST API blocks
+browser calls with CORS, so the request must go through a server. Netlify
+handles both halves — the static build and a serverless function that holds the
+key.
 
-**One-time setup:** in the repository's **Settings → Pages**, set **Source** to
-**GitHub Actions**.
+- [`netlify.toml`](netlify.toml) sets the build (`npm run build` → `dist`) and
+  the functions directory.
+- [`netlify/functions/whereby.mts`](netlify/functions/whereby.mts) is the
+  production twin of the dev proxy: it serves `/api/whereby/*`, attaches the
+  `Authorization` header from a server-side env var, and forwards to
+  `https://api.whereby.dev`. The frontend calls the same `/api/whereby/...` path
+  in dev and prod, so nothing in the app changes.
 
-> **Note:** the deployed static site renders the UI but **cannot generate
-> meetings** — there is no dev-server proxy in production to hold the API key.
-> To create meetings from a deployed site you'd add a small serverless function
-> (e.g. Netlify/Vercel/Cloudflare) that performs the same proxied, authenticated
-> `POST /v1/meetings` call. Joining a meeting link works fine on the static site.
+**One-time setup:**
+
+1. Connect the GitHub repo in Netlify (build settings come from `netlify.toml`).
+2. In **Site settings → Environment variables**, add `WHEREBY_API_KEY` with your
+   key. It stays on the server — never in the repo or the bundle.
+
+The repo can still live on GitHub; Netlify just builds and hosts it. Every push
+to the connected branch triggers a deploy.
