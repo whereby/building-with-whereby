@@ -1,9 +1,11 @@
 // Thin, defensive wrappers over localStorage. Everything here degrades quietly
 // if storage is unavailable (private mode, disabled, quota).
 
-const RECENT_ROOMS_KEY = "whereby.recentRooms";
+import type { Meeting } from "./whereby";
+
+const MEETINGS_KEY = "whereby.meetings";
 const DISPLAY_NAME_KEY = "whereby.displayName";
-const MAX_RECENT = 10;
+const MAX_MEETINGS = 10;
 
 function readJson<T>(key: string, fallback: T): T {
   try {
@@ -23,23 +25,32 @@ function writeJson(key: string, value: unknown): void {
   }
 }
 
-export function getRecentRooms(): string[] {
-  const value = readJson<unknown>(RECENT_ROOMS_KEY, []);
-  if (!Array.isArray(value)) return [];
-  return value.filter((v): v is string => typeof v === "string").slice(0, MAX_RECENT);
+function isMeeting(v: unknown): v is Meeting {
+  return (
+    typeof v === "object" &&
+    v !== null &&
+    typeof (v as Meeting).meetingId === "string" &&
+    typeof (v as Meeting).roomUrl === "string"
+  );
 }
 
-/** Add a room URL to the front of the list, de-duplicated, capped at 10. */
-export function rememberRoom(roomUrl: string): string[] {
-  const existing = getRecentRooms().filter((u) => u !== roomUrl);
-  const next = [roomUrl, ...existing].slice(0, MAX_RECENT);
-  writeJson(RECENT_ROOMS_KEY, next);
+export function getMeetings(): Meeting[] {
+  const value = readJson<unknown>(MEETINGS_KEY, []);
+  if (!Array.isArray(value)) return [];
+  return value.filter(isMeeting).slice(0, MAX_MEETINGS);
+}
+
+/** Add a freshly created meeting to the front of the list, capped at 10. */
+export function rememberMeeting(meeting: Meeting): Meeting[] {
+  const existing = getMeetings().filter((m) => m.meetingId !== meeting.meetingId);
+  const next = [meeting, ...existing].slice(0, MAX_MEETINGS);
+  writeJson(MEETINGS_KEY, next);
   return next;
 }
 
-export function forgetRoom(roomUrl: string): string[] {
-  const next = getRecentRooms().filter((u) => u !== roomUrl);
-  writeJson(RECENT_ROOMS_KEY, next);
+export function forgetMeeting(meetingId: string): Meeting[] {
+  const next = getMeetings().filter((m) => m.meetingId !== meetingId);
+  writeJson(MEETINGS_KEY, next);
   return next;
 }
 

@@ -1,36 +1,23 @@
 import { useCallback, useState } from "react";
 import { WherebyProvider } from "@whereby.com/browser-sdk/react";
-import JoinForm from "./components/JoinForm";
+import MeetingsDashboard from "./components/MeetingsDashboard";
 import MediaSession from "./components/MediaSession";
-import { readRoomUrlFromFragment, toFragment } from "./lib/roomUrl";
-import { rememberRoom } from "./lib/storage";
 
 export default function App() {
-  const [roomUrl, setRoomUrl] = useState<string | null>(() => readRoomUrlFromFragment(window.location.hash));
+  // The room URL to join (host or participant link picked from the dashboard).
+  const [roomUrl, setRoomUrl] = useState<string | null>(null);
   // Bumping this key throws away the WherebyProvider (and its media client) and
   // starts fresh — used to re-acquire the microphone after the iOS silent fail.
   const [mediaKey, setMediaKey] = useState(0);
 
-  const handleJoin = useCallback((url: string) => {
-    rememberRoom(url);
-    // Keep the room in the fragment so a reload returns to the same lobby, and
-    // so the URL stays shareable — without ever putting it in a query string.
-    window.location.hash = toFragment(url);
-    setRoomUrl(url);
-  }, []);
-
-  const handleLeave = useCallback(() => {
-    // Drop the fragment without adding a history entry.
-    history.replaceState(null, "", window.location.pathname + window.location.search);
-    setRoomUrl(null);
-  }, []);
-
+  const handleJoin = useCallback((url: string) => setRoomUrl(url), []);
+  const handleLeave = useCallback(() => setRoomUrl(null), []);
   const remountMedia = useCallback(() => setMediaKey((k) => k + 1), []);
 
   return (
     <div className="min-h-full bg-neutral-950 text-neutral-100">
       {roomUrl === null ? (
-        <JoinForm onJoin={handleJoin} />
+        <MeetingsDashboard onJoin={handleJoin} />
       ) : (
         // A single WherebyProvider owns the media client that useLocalMedia and
         // useRoomConnection share; keeping it mounted from lobby through the
