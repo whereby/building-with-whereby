@@ -38,6 +38,9 @@ export async function createGroupMeeting(): Promise<Meeting> {
       body: JSON.stringify({
         endDate,
         roomMode: "group",
+        // Lock the room so participants (roomUrl) land in the waiting room and
+        // knock; the host (hostRoomUrl) joins directly and admits them.
+        isLocked: true,
         // hostRoomUrl is only returned when explicitly requested.
         fields: ["hostRoomUrl"],
       }),

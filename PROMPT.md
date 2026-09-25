@@ -13,7 +13,10 @@ Whereby-specific behavior below.
 **Generating meetings**: the home screen is a dashboard, not a URL paste
 box. A "New group meeting" button creates a Whereby Embedded meeting in
 group mode via the REST API (`POST https://api.whereby.dev/v1/meetings`
-with `roomMode: "group"` and `fields: ["hostRoomUrl"]`, plus an `endDate`).
+with `roomMode: "group"`, `isLocked: true`, and `fields: ["hostRoomUrl"]`,
+plus an `endDate`). Rooms are created locked so participants always knock and
+the host admits them; without `isLocked` Whereby defaults to unlocked and
+nobody knocks.
 Keep the last 10 generated meetings in a list (most recent first, persisted
 in localStorage). For each meeting show both the **host link**
 (`hostRoomUrl`, joins immediately and can admit others) and the
