@@ -1,18 +1,23 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { createGroupMeeting, WherebyApiError, type Meeting } from "../lib/whereby";
 import { getMeetings, rememberMeeting, forgetMeeting } from "../lib/storage";
-import { roomLabel } from "../lib/roomUrl";
-import { CheckIcon, CopyIcon, PlusIcon, TrashIcon, UsersIcon } from "./icons";
+import { roomLabel, appInviteLink } from "../lib/roomUrl";
+import { CheckIcon, CopyIcon, ExternalLinkIcon, PlusIcon, TrashIcon, UsersIcon } from "./icons";
 
 interface Props {
   onJoin: (url: string) => void;
 }
+
+type LinkMode = "custom" | "prebuilt";
 
 export default function MeetingsDashboard({ onJoin }: Props) {
   const [meetings, setMeetings] = useState<Meeting[]>(() => getMeetings());
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  // Per-meeting choice of which links to show: our custom UI, or Whereby's
+  // pre-built experience. Defaults to the custom UI.
+  const [modes, setModes] = useState<Record<string, LinkMode>>({});
 
   const create = async () => {
     setCreating(true);
@@ -75,60 +80,112 @@ export default function MeetingsDashboard({ onJoin }: Props) {
         </div>
       ) : (
         <ul className="flex flex-col gap-3">
-          {meetings.map((meeting) => (
-            <li key={meeting.meetingId} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
-              <div className="mb-3 flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h2 className="truncate text-sm font-medium text-neutral-100">{roomLabel(meeting.roomUrl)}</h2>
-                  <p className="text-xs text-neutral-500">
-                    Created {new Date(meeting.createdAt).toLocaleString()}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => remove(meeting.meetingId)}
-                  aria-label="Remove meeting from list"
-                  className="shrink-0 rounded-lg p-1.5 text-neutral-600 hover:bg-neutral-800 hover:text-neutral-300"
-                >
-                  <TrashIcon width={16} height={16} />
-                </button>
-              </div>
+          {meetings.map((meeting) => {
+            const mode = modes[meeting.meetingId] ?? "custom";
+            const setMode = (m: LinkMode) => setModes((prev) => ({ ...prev, [meeting.meetingId]: m }));
 
-              <div className="flex flex-col gap-2">
-                <LinkRow
-                  role="Host"
-                  primary
-                  url={meeting.hostRoomUrl}
-                  copied={copiedKey === `${meeting.meetingId}:host`}
-                  onCopy={() => copy(`${meeting.meetingId}:host`, meeting.hostRoomUrl)}
-                  onJoin={() => onJoin(meeting.hostRoomUrl)}
-                />
-                <LinkRow
-                  role="Participant"
-                  url={meeting.roomUrl}
-                  copied={copiedKey === `${meeting.meetingId}:participant`}
-                  onCopy={() => copy(`${meeting.meetingId}:participant`, meeting.roomUrl)}
-                  onJoin={() => onJoin(meeting.roomUrl)}
-                />
-              </div>
-            </li>
-          ))}
+            return (
+              <li key={meeting.meetingId} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
+                <div className="mb-3 flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2 className="truncate text-sm font-medium text-neutral-100">{roomLabel(meeting.roomUrl)}</h2>
+                    <p className="text-xs text-neutral-500">Created {new Date(meeting.createdAt).toLocaleString()}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => remove(meeting.meetingId)}
+                    aria-label="Remove meeting from list"
+                    className="shrink-0 rounded-lg p-1.5 text-neutral-600 hover:bg-neutral-800 hover:text-neutral-300"
+                  >
+                    <TrashIcon width={16} height={16} />
+                  </button>
+                </div>
+
+                {/* Link-mode toggle */}
+                <div className="mb-3 inline-flex rounded-lg bg-neutral-950 p-0.5 text-xs">
+                  <ModeButton active={mode === "custom"} onClick={() => setMode("custom")}>
+                    Custom UI
+                  </ModeButton>
+                  <ModeButton active={mode === "prebuilt"} onClick={() => setMode("prebuilt")}>
+                    Whereby pre-built
+                  </ModeButton>
+                </div>
+
+                {mode === "custom" ? (
+                  <div className="flex flex-col gap-2">
+                    {/* Participant invite link into our custom UI. */}
+                    <CopyRow
+                      role="Participant"
+                      url={appInviteLink(meeting.roomUrl)}
+                      copied={copiedKey === `${meeting.meetingId}:invite`}
+                      onCopy={() => copy(`${meeting.meetingId}:invite`, appInviteLink(meeting.roomUrl))}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => onJoin(meeting.hostRoomUrl)}
+                      className="self-start rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-indigo-500"
+                    >
+                      Join as host
+                    </button>
+                    <p className="text-xs text-neutral-600">
+                      Share the link to invite people into this app; they’ll knock and you admit them.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <CopyRow
+                      role="Host"
+                      primary
+                      url={meeting.hostRoomUrl}
+                      copied={copiedKey === `${meeting.meetingId}:host`}
+                      onCopy={() => copy(`${meeting.meetingId}:host`, meeting.hostRoomUrl)}
+                    >
+                      <OpenLink url={meeting.hostRoomUrl} />
+                    </CopyRow>
+                    <CopyRow
+                      role="Participant"
+                      url={meeting.roomUrl}
+                      copied={copiedKey === `${meeting.meetingId}:participant`}
+                      onCopy={() => copy(`${meeting.meetingId}:participant`, meeting.roomUrl)}
+                    >
+                      <OpenLink url={meeting.roomUrl} />
+                    </CopyRow>
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
   );
 }
 
-interface LinkRowProps {
+function ModeButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={
+        "rounded-md px-2.5 py-1 font-medium transition " +
+        (active ? "bg-neutral-700 text-neutral-100" : "text-neutral-400 hover:text-neutral-200")
+      }
+    >
+      {children}
+    </button>
+  );
+}
+
+interface CopyRowProps {
   role: string;
   url: string;
   primary?: boolean;
   copied: boolean;
   onCopy: () => void;
-  onJoin: () => void;
+  children?: ReactNode;
 }
 
-function LinkRow({ role, url, primary, copied, onCopy, onJoin }: LinkRowProps) {
+function CopyRow({ role, url, primary, copied, onCopy, children }: CopyRowProps) {
   return (
     <div className="flex items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-2">
       <span
@@ -149,18 +206,21 @@ function LinkRow({ role, url, primary, copied, onCopy, onJoin }: LinkRowProps) {
       >
         {copied ? <CheckIcon width={16} height={16} className="text-green-400" /> : <CopyIcon width={16} height={16} />}
       </button>
-      <button
-        type="button"
-        onClick={onJoin}
-        className={
-          "shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition " +
-          (primary
-            ? "bg-indigo-600 text-white hover:bg-indigo-500"
-            : "bg-neutral-800 text-neutral-100 hover:bg-neutral-700")
-        }
-      >
-        Join
-      </button>
+      {children}
     </div>
+  );
+}
+
+function OpenLink({ url }: { url: string }) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      className="flex shrink-0 items-center gap-1 rounded-md bg-neutral-800 px-3 py-1.5 text-xs font-medium text-neutral-100 transition hover:bg-neutral-700"
+    >
+      Open
+      <ExternalLinkIcon width={13} height={13} />
+    </a>
   );
 }

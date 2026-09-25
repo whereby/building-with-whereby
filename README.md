@@ -32,11 +32,19 @@ npm run dev
 ## How it works
 
 - **Dashboard** — a *New group meeting* button creates a Whereby Embedded
-  meeting in `group` mode via the REST API. The last 10 meetings are kept in
-  `localStorage` (most recent first); each shows a **host link** (joins
-  immediately, can admit others) and a **participant link**, each with copy and
-  Join buttons, plus a remove button. See
-  [`src/lib/whereby.ts`](src/lib/whereby.ts) and
+  meeting in `group` mode (locked) via the REST API. The last 10 meetings are
+  kept in `localStorage` (most recent first). Each meeting can be shared two
+  ways, toggled per card:
+  - **Custom UI** — a clean, name-based invite link into this app
+    (`/#<subdomain>/<roomName>`, no escaped characters) that deep-links a visitor
+    straight into the pre-join lobby as a participant (they knock). You enter via
+    *Join as host*. Joining needs no API key — only the room's own key — so
+    invited visitors never need one.
+  - **Whereby pre-built** — the raw host and participant room links that open
+    Whereby's own experience, with copy + open.
+
+  See [`src/lib/whereby.ts`](src/lib/whereby.ts),
+  [`src/lib/roomUrl.ts`](src/lib/roomUrl.ts), and
   [`src/components/MeetingsDashboard.tsx`](src/components/MeetingsDashboard.tsx).
 - **Lobby** keeps a single `useLocalMedia` mounted through the call so device
   choices carry over. It previews the camera (mirrored only for front-facing
