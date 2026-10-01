@@ -1,4 +1,4 @@
-# Building a custom video calling UI using Whereby Embedded, in an afternoon, with AI
+# Building a custom video calling app using Whereby Embedded, in an afternoon, with AI
 
 Whereby Embedded lets you add video calls to any product or platform in no time: a simple web component gives you a white-label, prebuilt video calling UI with ample customisation options. Most of the time, that's exactly what you want.
 
@@ -6,11 +6,11 @@ But sometimes, you want to make it yours: a layout that is a perfect fit for you
 
 So, I set myself a challenge: how fast could I build a fully custom video calling app today, with Claude Code writing pretty much all of the code? About an afternoon, it turns out. I came away with a working app, plus a repo and a spec you can clone and bend to your own needs.
 
-**TL;DR:** I built a custom video calling app on the Whereby Browser SDK: room generation, a bespoke pre-join lobby, a knock-to-enter flow, an orientation-aware grid. It runs locally in five minutes, deploys to Netlify, and the whole thing started as a prompt. Link at the bottom.
+**TL;DR:** I built a custom video calling app using the Whereby Browser SDK: room generation, a bespoke pre-join lobby, a knock-to-enter flow, an orientation-aware grid. It runs locally in five minutes, deploys to Netlify, and the whole thing started as a prompt. Link at the bottom.
 
 ## What’s happening under the hood
 
-First off: what's actually going on when you build a custom call with the Browser SDK's React hooks?
+First off: what's actually going on when you build a custom call with the Whereby Browser SDK's React hooks?
 
 Simply said, the `@whereby.com/browser-sdk` React package hands you the call as building blocks: `useLocalMedia` for the camera and mic, `useRoomConnection` for the room and its feature set, and a `VideoView` component to render any participant's stream. The rest of the UI, you build yourself.
 
