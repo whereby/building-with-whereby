@@ -8,7 +8,6 @@ import { hasRoomKey } from "../lib/roomUrl";
 interface Props {
   roomUrl: string;
   onLeave: () => void;
-  onRemountMedia: () => void;
 }
 
 /**
@@ -17,7 +16,7 @@ interface Props {
  * meeting. Local phase toggles between the pre-join lobby and the live call
  * without ever tearing down local media.
  */
-export default function MediaSession({ roomUrl, onLeave, onRemountMedia }: Props) {
+export default function MediaSession({ roomUrl, onLeave }: Props) {
   const localMedia = useLocalMedia({ audio: true, video: true });
   const [phase, setPhase] = useState<"lobby" | "call">("lobby");
   const [displayName, setDisplayName] = useState(() => getDisplayName());
@@ -47,7 +46,6 @@ export default function MediaSession({ roomUrl, onLeave, onRemountMedia }: Props
       onDisplayNameChange={handleDisplayNameChange}
       onContinue={() => setPhase("call")}
       onBack={onLeave}
-      onRemountMedia={onRemountMedia}
     />
   );
 }

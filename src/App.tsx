@@ -8,9 +8,6 @@ export default function App() {
   // The room URL to join (host or participant link picked from the dashboard,
   // or read from a shared #room=... invite link on load).
   const [roomUrl, setRoomUrl] = useState<string | null>(() => readRoomFromFragment(window.location.hash));
-  // Bumping this key throws away the WherebyProvider (and its media client) and
-  // starts fresh — used to re-acquire the microphone after the iOS silent fail.
-  const [mediaKey, setMediaKey] = useState(0);
 
   const handleJoin = useCallback((url: string) => {
     // Don't mirror the room into the address bar: a clean name-based fragment
@@ -28,8 +25,6 @@ export default function App() {
     setRoomUrl(null);
   }, []);
 
-  const remountMedia = useCallback(() => setMediaKey((k) => k + 1), []);
-
   // Route on fragment changes too, not just the initial load — so opening an
   // invite link in an already-open tab (or via back/forward) still works.
   useEffect(() => {
@@ -46,8 +41,8 @@ export default function App() {
         // A single WherebyProvider owns the media client that useLocalMedia and
         // useRoomConnection share; keeping it mounted from lobby through the
         // call is what carries the device choices over.
-        <WherebyProvider key={mediaKey}>
-          <MediaSession roomUrl={roomUrl} onLeave={handleLeave} onRemountMedia={remountMedia} />
+        <WherebyProvider>
+          <MediaSession roomUrl={roomUrl} onLeave={handleLeave} />
         </WherebyProvider>
       )}
     </div>

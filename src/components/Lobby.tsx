@@ -13,7 +13,6 @@ interface Props {
   onDisplayNameChange: (name: string) => void;
   onContinue: () => void;
   onBack: () => void;
-  onRemountMedia: () => void;
 }
 
 export default function Lobby({
@@ -23,7 +22,6 @@ export default function Lobby({
   onDisplayNameChange,
   onContinue,
   onBack,
-  onRemountMedia,
 }: Props) {
   const { state, actions } = localMedia;
   const {
@@ -36,7 +34,6 @@ export default function Lobby({
     currentSpeakerDeviceId,
   } = state;
 
-  const [enablingMic, setEnablingMic] = useState(false);
   const missingAudio = useMissingAudio(localStream);
 
   // useLocalMedia's state exposes no camera/mic "enabled" flag, and toggling
@@ -58,19 +55,6 @@ export default function Lobby({
     const next = !micOn;
     setMicOn(next);
     actions.toggleMicrophoneEnabled(next);
-  };
-
-  const enableMicrophone = async () => {
-    setEnablingMic(true);
-    try {
-      // Trigger a fresh permission prompt for audio, then let the media client
-      // restart cleanly so useLocalMedia picks up the new microphone track.
-      const probe = await navigator.mediaDevices.getUserMedia({ audio: true });
-      probe.getTracks().forEach((t) => t.stop());
-      onRemountMedia();
-    } catch {
-      setEnablingMic(false);
-    }
   };
 
   return (
@@ -123,20 +107,24 @@ export default function Lobby({
         </div>
       </div>
 
-      {/* iOS silent-mic-failure recovery */}
+      {/* iOS silent-mic failure: can't be re-requested from the page, so guide
+          the user to re-enable microphone access in iOS Settings. */}
       {missingAudio && (
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3">
-          <p className="text-sm text-amber-200">
-            Your camera is on but no microphone was detected. This can happen on iOS.
+        <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          <p className="font-medium">Your camera is on but no microphone was detected.</p>
+          <p className="mt-2 text-amber-200/90">
+            This can happen on iOS, and it can't be fixed from this page. To re-enable the microphone:
           </p>
-          <button
-            type="button"
-            onClick={enableMicrophone}
-            disabled={enablingMic}
-            className="shrink-0 rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-black hover:bg-amber-400 disabled:opacity-60"
-          >
-            {enablingMic ? "Requesting…" : "Enable microphone"}
-          </button>
+          <ol className="mt-1.5 list-decimal space-y-1 pl-5 text-amber-200/90">
+            <li>
+              Open the iOS <strong>Settings</strong> app and search for <strong>Safari</strong>.
+            </li>
+            <li>
+              Scroll to <strong>Microphone</strong> and set <strong>Microphone Access on All Websites</strong> to{" "}
+              <strong>Ask</strong>.
+            </li>
+            <li>Return to Safari and reload the page if needed, then accept the microphone prompt.</li>
+          </ol>
         </div>
       )}
 

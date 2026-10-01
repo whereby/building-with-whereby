@@ -62,7 +62,7 @@ export default function MeetingsDashboard({ onJoin }: Props) {
           ) : (
             <PlusIcon width={18} height={18} />
           )}
-          {creating ? "Creating…" : "New group meeting"}
+          {creating ? "Creating…" : "Create room"}
         </button>
       </header>
 
@@ -76,7 +76,7 @@ export default function MeetingsDashboard({ onJoin }: Props) {
         <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-neutral-800 py-16 text-center">
           <UsersIcon width={32} height={32} className="text-neutral-600" />
           <p className="text-sm text-neutral-500">No meetings yet.</p>
-          <p className="text-xs text-neutral-600">Click “New group meeting” to create one.</p>
+          <p className="text-xs text-neutral-600">Click “Create room” to create one.</p>
         </div>
       ) : (
         <ul className="flex flex-col gap-3">

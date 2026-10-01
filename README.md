@@ -98,3 +98,10 @@ with `netlify env:set`):
 Re-deploy any time with `netlify deploy --build --prod`. There's no auto-deploy
 on push — you publish when you're ready — and the repo can still live on GitHub
 as your source of truth.
+
+> **⚠️ Room generation is public.** Once deployed, anyone who can reach the URL
+> can click *Create room* and generate rooms on your Whereby account using your
+> key (it's the server-side function that holds the key, and the site calls it
+> for everyone). If that's not what you want, put the site behind a password —
+> Netlify offers password protection (and more granular access control) on its
+> paid plans — or otherwise restrict who can reach it.
