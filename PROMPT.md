@@ -87,12 +87,12 @@ updating live as the window resizes or a phone rotates. Portrait: 1-2 people
 in a single column, 3+ in two columns. Landscape: 1 person full-size, 2-4 in
 two columns, 5-9 in three, more than that in four.
 
-**Controls and icons**: use clean, polished control icons throughout rather
-than rough or flat glyphs. Style the mute/camera "off" states with a soft
-red (subtle shadow and inset ring, a small press animation) instead of a
-harsh flat fill. In the call, give the hang-up button a distinct, wider pill
-shape with a soft red glow and a proper end-call handset icon (a solid
-handset rotated to the classic hang-up position), so it reads clearly apart
+**Controls and icons**: use Material Design icons (via `react-icons`, outlined
+variants) throughout, rendered as inline SVGs styled with `currentColor` — no
+icon web font or runtime CDN. Style the mute/camera "off" states with a soft
+red (subtle shadow and inset ring, a small press animation) instead of a harsh
+flat fill. In the call, give the hang-up button a distinct, wider pill shape
+with a soft red glow and Material's end-call icon, so it reads clearly apart
 from the round mute/camera toggles. Also give the app a simple favicon and a
 descriptive page title.
 
