@@ -2,7 +2,7 @@
 
 # Building a custom video calling app using Whereby Embedded, in an afternoon, with AI
 
-Whereby Embedded lets you add video calls to any product or platform in no time: a simple web component gives you a white-label, prebuilt video calling UI with ample customisation options. Most of the time, that's exactly what you want.
+[Whereby Embedded](http://whereby.com/information/embedded) lets you add video calls to any product or platform in no time: a simple web component gives you a white-label, prebuilt video calling UI with ample customisation options. Most of the time, that's exactly what you want.
 
 But sometimes, you want to make it yours: a layout that is a perfect fit for your brand, custom call controls, a specific join flow. To achieve that, there's a second path: Whereby's Browser SDK allows you to add completely custom video calling functionality to your platform. The interface and frontend can be shaped in whatever way you want, and the SDK handles the hard parts of real-time video.
 
