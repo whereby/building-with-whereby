@@ -1,5 +1,13 @@
 # Whereby Embedded starter
 
+> [!WARNING]
+> **AI-generated demo — not production software.** This project was built
+> largely by prompting an AI agent (see [`PROMPT.md`](PROMPT.md)). It's meant as
+> a starting point and learning reference, not a hardened, production-ready app.
+> It hasn't been security-reviewed or battle-tested. Use it at your own risk,
+> and review, test, and harden it yourself before relying on it for anything
+> real.
+
 A custom video-calling web app built directly on the
 [`@whereby.com/browser-sdk`](https://docs.whereby.com/) React hooks
 (`useLocalMedia`, `useRoomConnection`, `VideoView`) rather than the default
