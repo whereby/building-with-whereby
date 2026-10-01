@@ -1,7 +1,7 @@
 Build a custom video calling web app on top of Whereby Embedded, using
 the `@whereby.com/browser-sdk` React hooks (`useLocalMedia`,
-`useRoomConnection`, `VideoView`) instead of the default embedded
-iframe.
+`useRoomConnection`, `VideoView`) instead of the default prebuilt web
+component.
 
 **Stack**: Vite, React, TypeScript, Tailwind CSS v4 (via
 `@tailwindcss/vite`), dark UI by default. There is no application backend —
@@ -11,34 +11,34 @@ Whereby Embedded docs are at https://docs.whereby.com/, use them as the
 reference for the `browser-sdk` hooks, the REST API, and any Whereby-specific
 behavior below.
 
-**Generating meetings**: the home screen is a dashboard, not a URL paste
-box. A "New group meeting" button creates a Whereby Embedded meeting in group
-mode via the REST API (`POST https://api.whereby.dev/v1/meetings` with
+**Creating rooms**: the home screen is a dashboard, not a URL paste box. A
+"Create room" button creates a Whereby Embedded room (a meeting in group mode)
+via the REST API (`POST https://api.whereby.dev/v1/meetings` with
 `roomMode: "group"`, `isLocked: true`, and `fields: ["hostRoomUrl"]`, plus an
 `endDate`). Rooms are created locked so participants always knock and the host
 admits them; without `isLocked` Whereby defaults to unlocked and nobody knocks.
-Keep the last 10 generated meetings in a list (most recent first, persisted in
+Keep the last 10 created rooms in a list (most recent first, persisted in
 localStorage), each with a remove button. Add a no-referrer meta tag, since the
 links contain a `roomKey` that works like a password.
 
-Each meeting can be shared two ways, toggled per card:
+Each room can be shared two ways, toggled per card (keep the card height steady
+across the toggle):
 
 - **Custom UI** — a clean, name-based invite link into this app (`/#<roomName>`,
   with no escaped characters), plus a "Join as host" button for the person
-  running the meeting. The invite is participant-only — it deep-links straight
-  into this app's pre-join lobby and knocks — because the host key can't ride in
-  a clean link. On load *and* on `hashchange`, read the fragment and rebuild the
+  running the room. The invite is participant-only — it deep-links straight into
+  this app's pre-join lobby and knocks — because the host key can't ride in a
+  clean link. On load *and* on `hashchange`, read the fragment and rebuild the
   room URL as `https://<subdomain>.whereby.com/<roomName>`, where the subdomain
   comes from a public `VITE_WHEREBY_SUBDOMAIN` build-time env var (it's in every
   room URL, so it's not secret). Joining needs no API key (only the room's own
-  key), so invited visitors never need one — only the person generating meetings
-  does.
+  key), so invited visitors never need one — only the person creating rooms does.
 - **Whereby pre-built** — the raw host and participant room links (`hostRoomUrl`
   joins immediately and can admit others; `roomUrl` is the participant link),
   each with a copy button and an open-in-new-tab button, for Whereby's own
   prebuilt experience.
 
-**API key / keeping it secret**: creating meetings needs a secret Whereby
+**API key / keeping it secret**: creating rooms needs a secret Whereby
 REST API key. It must never end up in the browser bundle or in git. Put it
 in a `.env` file as `WHEREBY_API_KEY` (no `VITE_` prefix), gitignore `.env`,
 and ship a `.env.example`. Configure the Vite dev server to proxy
@@ -46,7 +46,7 @@ and ship a `.env.example`. Configure the Vite dev server to proxy
 `Authorization: Bearer <key>` header. The browser only ever calls the
 same-origin proxy path, so the key stays in the dev-server process and CORS
 (this is a server-to-server API) is a non-issue. Because a static build has
-no proxy, meeting generation only works while running the dev server or behind
+no proxy, room generation only works while running the dev server or behind
 the equivalent serverless function in production (see Deployment). Handle a
 missing/invalid key with a clear message telling the user to set
 `WHEREBY_API_KEY` and restart.
@@ -65,9 +65,9 @@ reference, so track the on/off intent yourself rather than reading it back off
 choices carry over. Only mirror the camera preview for front-facing cameras,
 not a rear camera on a phone. Also handle this iOS quirk: `getUserMedia` can
 silently fail to get a microphone while the camera still works fine, no error,
-no prompt, just no audio. Detect when there's video but no live audio track,
-and show a banner with an "Enable microphone" button that asks for mic access
-again.
+no prompt, just no audio. It can't be re-requested from the page, so detect it
+(video present, no live audio track) and show a banner telling the user how to
+re-enable microphone access in iOS Settings.
 
 **Knock flow**: the host link joins immediately; the participant link waits
 for the host to let them in when the room is locked. Using
@@ -93,9 +93,10 @@ red (subtle shadow and inset ring, a small press animation) instead of a
 harsh flat fill. In the call, give the hang-up button a distinct, wider pill
 shape with a soft red glow and a proper end-call handset icon (a solid
 handset rotated to the classic hang-up position), so it reads clearly apart
-from the round mute/camera toggles.
+from the round mute/camera toggles. Also give the app a simple favicon and a
+descriptive page title.
 
-**Deployment**: deploy to Netlify (a static host can't create meetings — the
+**Deployment**: deploy to Netlify (a static host can't create rooms — the
 Whereby REST API blocks browser calls with CORS, so a server-side hop is
 required). Ship a `netlify.toml` (build `npm run build`, publish `dist`) and a
 Functions-v2 serverless function at `/api/whereby/*` that mirrors the dev

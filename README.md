@@ -1,9 +1,9 @@
-# Whereby Call
+# Whereby Embedded starter
 
 A custom video-calling web app built directly on the
 [`@whereby.com/browser-sdk`](https://docs.whereby.com/) React hooks
 (`useLocalMedia`, `useRoomConnection`, `VideoView`) rather than the default
-embedded iframe. You generate Whereby group meetings from a dashboard and drop
+prebuilt web component. You generate Whereby rooms from a dashboard and drop
 straight into a custom call UI.
 
 **Stack:** Vite · React · TypeScript · Tailwind CSS v4 (`@tailwindcss/vite`) · dark UI.
@@ -31,10 +31,10 @@ npm run dev
 
 ## How it works
 
-- **Dashboard** — a *New group meeting* button creates a Whereby Embedded
-  meeting in `group` mode (locked) via the REST API. The last 10 meetings are
-  kept in `localStorage` (most recent first). Each meeting can be shared two
-  ways, toggled per card:
+- **Dashboard** — a *Create room* button creates a Whereby Embedded room (a
+  `group`-mode, locked meeting) via the REST API. The last 10 rooms are kept in
+  `localStorage` (most recent first). Each room can be shared two ways, toggled
+  per card:
   - **Custom UI** — a clean, name-based invite link into this app
     (`/#<roomName>`, no escaped characters) that deep-links a visitor straight
     into the pre-join lobby as a participant (they knock). You enter via *Join as
@@ -51,7 +51,8 @@ npm run dev
   choices carry over. It previews the camera (mirrored only for front-facing
   cameras), exposes camera/mic/speaker pickers and a speaker test tone, tracks
   toggle state as intent (the SDK exposes no enabled flag), and detects the iOS
-  quirk where the mic silently fails — offering an *Enable microphone* button.
+  quirk where the mic silently fails. That can't be re-requested from the page,
+  so it shows a banner telling the user how to re-enable the mic in iOS Settings.
   The primary button reads **Knock** for a guest (keyless link) and **Join
   call** for the host (a link with a `roomKey`).
 - **Knock flow** — on `room_locked` it calls `knock()` and shows a waiting
