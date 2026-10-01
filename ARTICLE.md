@@ -1,4 +1,4 @@
-# Building a custom video calling app on Whereby Embedded, in an afternoon, with AI
+# Building a custom video calling UI using Whereby Embedded, in an afternoon, with AI
 
 Whereby Embedded lets you add video calls to any product or platform in no time: a simple web component gives you a white-label, prebuilt video calling UI with ample customisation options. Most of the time, that's exactly what you want.
 
