@@ -114,3 +114,7 @@ as your source of truth.
 > for everyone). If that's not what you want, put the site behind a password —
 > Netlify offers password protection (and more granular access control) on its
 > paid plans — or otherwise restrict who can reach it.
+
+## License
+
+[MIT](LICENSE)
