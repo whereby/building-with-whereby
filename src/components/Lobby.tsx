@@ -4,6 +4,7 @@ import { ControlButton, DeviceSelect } from "./controls";
 import { CameraIcon, CameraOffIcon, MicIcon, MicOffIcon, SpeakerIcon } from "./icons";
 import { shouldMirror } from "../lib/mirror";
 import { useMissingAudio } from "../hooks/useMissingAudio";
+import { useMediaDevices } from "../hooks/useMediaDevices";
 import { playTestTone } from "../lib/testTone";
 
 interface Props {
@@ -35,6 +36,14 @@ export default function Lobby({
   } = state;
 
   const missingAudio = useMissingAudio(localStream);
+
+  // Our own enumeration re-runs as soon as the stream goes live, so device
+  // names appear on first grant rather than only after a refresh. Fall back to
+  // the SDK's lists if enumeration hasn't populated yet.
+  const live = useMediaDevices(localStream);
+  const cameras = live.cameras.length ? live.cameras : cameraDevices;
+  const microphones = live.microphones.length ? live.microphones : microphoneDevices;
+  const speakers = live.speakers.length ? live.speakers : speakerDevices;
 
   // useLocalMedia's state exposes no camera/mic "enabled" flag, and toggling
   // only flips track.enabled (or stops/re-acquires the track) without changing
@@ -133,7 +142,7 @@ export default function Lobby({
         <DeviceSelect
           label="Camera"
           icon={<CameraIcon />}
-          devices={cameraDevices}
+          devices={cameras}
           value={currentCameraDeviceId}
           onChange={actions.setCameraDevice}
           fallbackLabel={(i) => `Camera ${i + 1}`}
@@ -141,7 +150,7 @@ export default function Lobby({
         <DeviceSelect
           label="Microphone"
           icon={<MicIcon />}
-          devices={microphoneDevices}
+          devices={microphones}
           value={currentMicrophoneDeviceId}
           onChange={actions.setMicrophoneDevice}
           fallbackLabel={(i) => `Microphone ${i + 1}`}
@@ -151,7 +160,7 @@ export default function Lobby({
             <DeviceSelect
               label="Speaker"
               icon={<SpeakerIcon />}
-              devices={speakerDevices}
+              devices={speakers}
               value={currentSpeakerDeviceId}
               onChange={actions.setSpeakerDevice}
               fallbackLabel={(i) => `Speaker ${i + 1}`}
