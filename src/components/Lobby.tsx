@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { VideoView, type UseLocalMediaResult } from "@whereby.com/browser-sdk/react";
 import { ControlButton, DeviceSelect } from "./controls";
 import { CameraIcon, CameraOffIcon, MicIcon, MicOffIcon, SpeakerIcon } from "./icons";
@@ -44,6 +44,39 @@ export default function Lobby({
   const cameras = live.cameras.length ? live.cameras : cameraDevices;
   const microphones = live.microphones.length ? live.microphones : microphoneDevices;
   const speakers = live.speakers.length ? live.speakers : speakerDevices;
+
+  // Some browsers leave the active track's deviceId blank on the very first
+  // getUserMedia, so the SDK's current device ids come back empty. That makes
+  // the pickers match nothing and blocks device switching until a reload. Once
+  // the stream is live and real labels are available, seed the SDK's current
+  // ids from the active tracks (matching by label when the deviceId is blank).
+  const seeded = useRef(false);
+  useEffect(() => {
+    if (!localStream || seeded.current) return;
+    const havePermission = live.cameras.some((d) => d.label) || live.microphones.some((d) => d.label);
+    if (!havePermission) return;
+    seeded.current = true;
+
+    // Nudge the SDK to re-enumerate its own device list, which it otherwise only
+    // does on a real devicechange or a reload.
+    try {
+      navigator.mediaDevices.dispatchEvent(new Event("devicechange"));
+    } catch {
+      // ignore
+    }
+
+    const resolveId = (track: MediaStreamTrack | undefined, list: MediaDeviceInfo[]): string | undefined =>
+      track ? track.getSettings().deviceId || list.find((d) => d.deviceId && d.label === track.label)?.deviceId : undefined;
+
+    if (!currentCameraDeviceId) {
+      const id = resolveId(localStream.getVideoTracks()[0], live.cameras);
+      if (id) actions.setCameraDevice(id);
+    }
+    if (!currentMicrophoneDeviceId) {
+      const id = resolveId(localStream.getAudioTracks()[0], live.microphones);
+      if (id) actions.setMicrophoneDevice(id);
+    }
+  }, [localStream, live.cameras, live.microphones, currentCameraDeviceId, currentMicrophoneDeviceId, actions]);
 
   // useLocalMedia's state exposes no camera/mic "enabled" flag, and toggling
   // only flips track.enabled (or stops/re-acquires the track) without changing
