@@ -56,10 +56,12 @@ preview, mute/camera toggles, camera/mic/speaker device pickers, a button
 that plays a short test tone through the speaker, and a name field
 remembered across visits. The primary button reads "Knock" for a guest
 (a keyless participant link) and "Join call" for the host (a link with a
-`roomKey`). Show real device names in the pickers as soon as access is granted,
-not only after a refresh: browsers blank out device labels until permission is
-granted, so re-enumerate devices when the local stream first goes live (and on
-`devicechange`) rather than relying on the one-time list. The mute and camera toggles must reflect their real on/off state
+`roomKey`). The device pickers must work fully on first grant, not only after a
+refresh. Browsers blank out device labels (and sometimes the active track's
+deviceId) until permission is granted, so when the local stream first goes live:
+re-enumerate devices to show real names (also on `devicechange`), and seed the
+current camera/mic ids from the active tracks (matching by label when the
+deviceId is blank) so selecting a different device actually switches to it. The mute and camera toggles must reflect their real on/off state
 and flip reliably in both directions — a camera you turn off must turn back on
 again. Note that `useLocalMedia` exposes no "enabled" flag and toggling only
 mutates the track (or stops and re-acquires it) without changing the stream
