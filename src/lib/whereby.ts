@@ -49,7 +49,7 @@ export async function createGroupMeeting(): Promise<Meeting> {
     // Network error — usually means the dev-server proxy isn't running.
     throw new WherebyApiError(
       0,
-      "Couldn't reach the Whereby API. Meeting generation runs through the dev server — make sure you're running `npm run dev`.",
+      "Couldn't reach the Whereby API. Room generation runs through the dev server, so make sure you're running `npm run dev`.",
     );
   }
 

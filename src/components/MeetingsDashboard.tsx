@@ -26,7 +26,7 @@ export default function MeetingsDashboard({ onJoin }: Props) {
       const meeting = await createGroupMeeting();
       setMeetings(rememberMeeting(meeting));
     } catch (e) {
-      setError(e instanceof WherebyApiError ? e.message : "Something went wrong creating the meeting.");
+      setError(e instanceof WherebyApiError ? e.message : "Something went wrong creating the room.");
     } finally {
       setCreating(false);
     }
@@ -48,8 +48,8 @@ export default function MeetingsDashboard({ onJoin }: Props) {
     <div className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-5">
       <header className="flex items-center justify-between pt-2">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Meetings</h1>
-          <p className="text-sm text-neutral-400">Generate a Whereby group room and share the links.</p>
+          <h1 className="text-2xl font-semibold tracking-tight">Whereby rooms list</h1>
+          <p className="text-sm text-neutral-400">Generate a Whereby room and share the links.</p>
         </div>
         <button
           type="button"
@@ -75,7 +75,7 @@ export default function MeetingsDashboard({ onJoin }: Props) {
       {meetings.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-neutral-800 py-16 text-center">
           <UsersIcon width={32} height={32} className="text-neutral-600" />
-          <p className="text-sm text-neutral-500">No meetings yet.</p>
+          <p className="text-sm text-neutral-500">No rooms yet.</p>
           <p className="text-xs text-neutral-600">Click “Create room” to create one.</p>
         </div>
       ) : (
@@ -94,7 +94,7 @@ export default function MeetingsDashboard({ onJoin }: Props) {
                   <button
                     type="button"
                     onClick={() => remove(meeting.meetingId)}
-                    aria-label="Remove meeting from list"
+                    aria-label="Remove room from list"
                     className="shrink-0 rounded-lg p-1.5 text-neutral-600 hover:bg-neutral-800 hover:text-neutral-300"
                   >
                     <TrashIcon width={16} height={16} />
@@ -112,7 +112,7 @@ export default function MeetingsDashboard({ onJoin }: Props) {
                 </div>
 
                 {mode === "custom" ? (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex min-h-28 flex-col gap-2">
                     {/* Participant invite link into our custom UI. */}
                     <CopyRow
                       role="Participant"
@@ -128,11 +128,11 @@ export default function MeetingsDashboard({ onJoin }: Props) {
                       Join as host
                     </button>
                     <p className="text-xs text-neutral-600">
-                      Share the link to invite people into this app; they’ll knock and you admit them.
+                      Share the participant link to invite people into this app; they’ll knock and you admit them.
                     </p>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex min-h-28 flex-col gap-2">
                     <CopyRow
                       role="Host"
                       primary
