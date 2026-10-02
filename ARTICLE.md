@@ -43,7 +43,7 @@ A video calling app that only runs on your laptop isn't very useful. The entire 
 
 The key thing to consider here is that your API key is a secret and has to stay server-side. Anyone who can read it can create rooms on your account, so it can never live in front-end code that ships to the browser. 
 
-So, room creation goes through a tiny proxy: when running it locally, we use a local dev server; in production, we can use a small Netlify function, or you can use a similar offering from a different provider. Full details about the Netlify setup in the repository’s README file.
+So, room creation goes through a tiny proxy: when running it locally, we use a local dev server; in production, we can use a small [Netlify](https://www.netlify.com/) function, or you can use a similar offering from a different provider. Full details about the Netlify setup in the repository’s [README file](https://github.com/whereby/building-with-whereby/blob/main/README.md).
 
 ## Grab the prompt
 
