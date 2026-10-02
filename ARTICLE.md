@@ -39,7 +39,7 @@ When you load the dashboard, you want to click on “Create room”, which will 
 
 ## Beyond localhost: deploy so you can test IRL
 
-A video calling app that only runs on your laptop isn't much of a video app. The entire point of video calling is to connect with other people on other devices. So the next step is deploying this to a public URL.
+A video calling app that only runs on your laptop isn't very useful. The entire point of video calling is to connect with other people on other devices. So the next step is deploying this to a public URL.
 
 The key thing to consider here is that your API key is a secret and has to stay server-side. Anyone who can read it can create rooms on your account, so it can never live in front-end code that ships to the browser. 
 
