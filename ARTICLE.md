@@ -4,7 +4,7 @@
 
 [Whereby Embedded](http://whereby.com/information/embedded) lets you add video calls to any product or platform in no time: a simple web component gives you a white-label, prebuilt video calling UI with ample customisation options. Most of the time, that's exactly what you want.
 
-But sometimes, you want to make it yours: a layout that is a perfect fit for your brand, custom call controls, a specific join flow. To achieve that, there's a second path: Whereby's Browser SDK allows you to add completely custom video calling functionality to your platform. The interface and frontend can be shaped in whatever way you want, and the SDK handles the hard parts of real-time video.
+But sometimes, you want to make it yours: a layout that is a perfect fit for your brand, custom call controls, a specific join flow. To achieve that, there's a second path: [Whereby's Browser SDK](https://docs.whereby.com/whereby-for-web-browser/react-based-browser-sdk/quick-start) allows you to add completely custom video calling functionality to your platform. The interface and frontend can be shaped in whatever way you want, and the SDK handles the hard parts of real-time video.
 
 So, I set myself a challenge: how fast could I build a fully custom video calling app today, with Claude Code writing pretty much all of the code? About an afternoon, it turns out. I came away with a working app, plus a repo and a spec you can clone and bend to your own needs.
 
